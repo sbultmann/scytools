@@ -25,5 +25,6 @@ def index(request):
 
 
 def requestNCBI(request, gene_org):
+    info = test.objects.get(pk=gene_org)
     response = "You're looking at the results of question %s."
-    return HttpResponse(response % gene_org)
+    return HttpResponse(response % info.org_name)
