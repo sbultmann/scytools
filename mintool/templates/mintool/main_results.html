@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/reset.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/text.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/960.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/mintool.css' %}"/>
+    <meta charset="UTF-8">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <title>results</title>
+
+</head>
+<body>
+<div class="container_12">
+    <div class="grid_12" id="header"><h1>Header</h1></div>
+    <div class="clear"></div>
+
+    <div class="grid_12" id="nav-bar"><h2>Nav-bar</h2></div>
+    <div class="clear"></div>
+    <div class="grid_12" id="seperator"></div>
+    <div class="clear"></div>
+    <div class="grid_4">
+        <div class="grid_4 alpha" id="sub_header">I. Choose gene</div>
+        {% for Gene in result %}
+            <div class="grid_4 {% if forloop.last %} omega"{% endif %} id ="result">
+                <h5>{{ Gene.Gene_Name }} </h5>
+                <p id="locus_designation">{{ Gene.Chr }}</p>
+                <p>{{ Gene.Description }}</p>
+            </div>
+        {% endfor %}
+        </div>
+    <div class="grid_4">
+        <div class="grid_4 alpha" id="sub_header">II. Select Isoform</div>
+        <div class="grid_4 omega" id="isoform-overview"></div>
+
+    </div>
+    <div class="grid_4">
+        <div class="grid_4 alpha" id="sub_header">III. Select Terminus</div>
+        <div class="grid_4 omega" id=""></div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+
+<script>
+    function numberWithCommas(x) {
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+    {% for Gene in result %}
+        var rulerTicks = [{{ Gene.From }}, {{ Gene.To }}];
+        var svgRuler = d3.select("#isoform-overview").append("svg")
+            .attr("width", 300)
+            .attr("height", 50)
+            .attr("class", "ruler");
+        var locus = svgRuler.append("line")
+            .attr("x1", 0)
+            .attr("x2", 300)
+            .attr("y1", 32.5)
+            .attr("y2", 32.5)
+            .attr("stroke-width", 3.5)
+            .attr("stroke", "black");
+        var svgLocusText = svgRuler.append("text")
+            .attr("x", 150)
+            .attr("y", 10)
+            .text("{{ Gene.Gene_Name }} locus")
+            .attr("text-anchor", "middle")
+            .attr("font-family", "helvetica")
+            .attr("font-size", 12);
+        var svgLocusText2 = svgRuler.append("text")
+            .attr("x", 150)
+            .attr("y", 22)
+            .text("chr{{ Gene.chr }}:" + numberWithCommas(rulerTicks[0]) + "-" + numberWithCommas(rulerTicks[1]))
+            .attr("text-anchor", "middle")
+            .attr("font-family", "courier new")
+            .attr("font-size", 10);
+
+        var isoform_data = {{ Gene.Isoforms|safe }};
+        for (var i = 0; i < isoform_data.length; i++) {
+            var isoform = JSON.parse(isoform_data[i]);
+            var svgContainer = d3.select("#isoform-overview").append("svg")
+                .attr("width", 300)
+                .attr("height", 50)
+                .attr("id", isoform.Accession_protein)
+                .attr("class", "isoform_display");
+            var svgTextName = svgContainer.append("text")
+                .attr("x", 5)
+                .attr("y", 10)
+                .text(isoform.Name)
+                .attr("font-family", "helvetica")
+                .attr("letter-spacing", "1px")
+                .attr("font-size", 10);
+            var rectangle = svgContainer.selectAll("rect")
+                .data(isoform.Exons)
+                .enter()
+                .append("rect")
+                .attr("x", function (d) {
+                    return d[1]
+                })
+                .attr("y", 20)
+                .attr("fill", "black")
+                .attr("width", function (d) {
+                    var returnVal;
+                    if (d[0] - d[1] == 0) {
+                        returnVal = 1;
+                    } else {
+                        returnVal = d[0] - d[1];
+                    }
+                    return returnVal;
+                })
+                .attr("height", "25");
+            var min = 1000000000000000000;
+            var max = 0;
+            for (var x = 0; x < isoform.Exons.length; x++) {
+                if (isoform.Exons[x][1] < min) {
+                    min = isoform.Exons[x][1];
+                }
+                if (isoform.Exons[x][0] > max) {
+                    max = isoform.Exons[x][0];
+                }
+            }
+            var line = svgContainer.append("line")
+                .attr("x1", min)
+                .attr("x2", max)
+                .attr("y1", 32.5)
+                .attr("y2", 32.5)
+                .attr("stroke-width", 1)
+                .attr("stroke", "black");
+
+        }
+
+    {% endfor %}
+</script>
+</body>
+</html>

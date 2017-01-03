@@ -1,0 +1,38 @@
+#header{
+    width:100%;
+    height: 100px;
+    background-color: aliceblue;
+}
+#nav-bar{
+    width: 100%;
+    height: 33px;
+    background-color: azure;
+}
+#seperator {
+    width: 100%;
+    height: 33px;
+}
+#result{
+    text-align: justify;
+    text-justify: inter-word;
+}
+#sub_header{
+    font-weight: 800;
+    font-size: 18px;
+}
+.isoform_display {
+    display: inline-block;
+    vertical-align: middle;
+    transform: translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    backface-visibility: hidden;
+    -moz-osx-font-smoothing: grayscale;
+    transition-duration: 0.3s;
+    transition-property: transform;
+}
+
+.isoform_display :hover,
+.isoform_display :focus,
+.isoform_display :active {
+    transform: scale(1.1);
+}

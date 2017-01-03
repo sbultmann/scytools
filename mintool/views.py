@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from .forms import RequestForm
 from .models import test
+from .functions.entrez import *
 
 
 def index(request):
@@ -26,5 +27,5 @@ def index(request):
 
 def requestNCBI(request, gene_org):
     info = test.objects.get(pk=gene_org)
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % info.org_name)
+    res = query_ncbi(str(info.gene_name), str(info.org_name))
+    return render(request, 'mintool/main_results.html', {'result': res})
