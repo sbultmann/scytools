@@ -9,28 +9,42 @@
     <link rel="stylesheet" type="text/css" href="{% static 'mintool/mintool.css' %}"/>
     <meta charset="UTF-8">
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".terminus").click(function (e) {
+                e.preventDefault();
+                $('.terminus').removeAttr('style');
+                $('#' + $(this).data('rel')).css("background", "LightSlateGray");
+            });
+            $(".isoform_display").click(function (e) {
+                e.preventDefault();
+                $(this).css("background", "LightSlateGray").siblings("div").removeAttr('style');
+            });
+
+        });
+    </script>
     <title>results</title>
 
 </head>
 <body>
 <div class="container_12">
-    <div class="grid_12" id="header"><h1>Header</h1></div>
+    <div class="grid_12" id="header">MINtool</div>
     <div class="clear"></div>
 
-    <div class="grid_12" id="nav-bar"><h2>Nav-bar</h2></div>
+    <div class="grid_12" id="nav-bar"></div>
     <div class="clear"></div>
     <div class="grid_12" id="seperator"></div>
     <div class="clear"></div>
     <div class="grid_4">
-        <div class="grid_4 alpha" id="sub_header">I. Choose gene</div>
+        <div class="grid_4 alpha" id="sub_header">I. Gene Info</div>
         {% for Gene in result %}
-            <div class="grid_4 {% if forloop.last %} omega"{% endif %} id ="result">
-                <h5>{{ Gene.Gene_Name }} </h5>
-                <p id="locus_designation">{{ Gene.Chr }}</p>
+            <div class="grid_4 {% if forloop.last %} omega"{% endif %} id="result" acc={{ Gene.Accession }}>
+                <p id="gene_name">{{ Gene.Gene_Name }} </p>
                 <p>{{ Gene.Description }}</p>
             </div>
         {% endfor %}
-        </div>
+    </div>
     <div class="grid_4">
         <div class="grid_4 alpha" id="sub_header">II. Select Isoform</div>
         <div class="grid_4 omega" id="isoform-overview"></div>
@@ -38,8 +52,26 @@
     </div>
     <div class="grid_4">
         <div class="grid_4 alpha" id="sub_header">III. Select Terminus</div>
-        <div class="grid_4 omega" id=""></div>
+        <div class="grid_4">
+            <p id="gene_name">N- or C-terminal MIN-tagging?</p>
+            <p>Please choose the terminus that you would like to MIN-tag. It is important to note that many
+                functional modules of the MIN-tag toolbox require N-terminal targeting (e.g. knock-out, BioID,
+                GFP knock-in, ...). However, some proteins are inhibited by N-terminal tagging and can only be
+                tagged C-terminally. If there is no prior knowledge about your protein of interest regarding this,
+                it should be tested in advance e.g. with GFP-fusions constructs. So choose wisely, ...
+            </p>
+        </div>
+        <div class="grid_4">
+            <div class="terminus" id="N-term" data-rel="N-term">N-terminus</div>
+        </div>
+        <div class="grid_4" id="spacer12"></div>
+        <div class="grid_4">
+            <div class="terminus" id="C-term" data-rel="C-term">C-terminus</div>
+        </div>
+        <div class="grid_4 omega"></div>
     </div>
+    <div class="clear"></div>
+    <div class="grid_12" id="sub_header">IV. Choos a gRNA</div>
     <div class="clear"></div>
 </div>
 
@@ -52,10 +84,12 @@
     }
     {% for Gene in result %}
         var rulerTicks = [{{ Gene.From }}, {{ Gene.To }}];
-        var svgRuler = d3.select("#isoform-overview").append("svg")
+        var divRuler = d3.select("#isoform-overview").append("div")
+            .attr("class", "ruler")
+            .attr("id", {{ Gene.Accession }});
+        var svgRuler = divRuler.append("svg")
             .attr("width", 300)
-            .attr("height", 50)
-            .attr("class", "ruler");
+            .attr("height", 50);
         var locus = svgRuler.append("line")
             .attr("x1", 0)
             .attr("x2", 300)
@@ -79,13 +113,16 @@
             .attr("font-size", 10);
 
         var isoform_data = {{ Gene.Isoforms|safe }};
+        var ContainerDiv = d3.select("#isoform-overview").append("div")
+            .attr("class", "container");
         for (var i = 0; i < isoform_data.length; i++) {
             var isoform = JSON.parse(isoform_data[i]);
-            var svgContainer = d3.select("#isoform-overview").append("svg")
+            var divIsoforms = ContainerDiv.append("div")
+                .attr("class", "isoform_display")
+                .attr("id", isoform.Accession_nucleotide);
+            var svgContainer = divIsoforms.append("svg")
                 .attr("width", 300)
                 .attr("height", 50)
-                .attr("id", isoform.Accession_protein)
-                .attr("class", "isoform_display");
             var svgTextName = svgContainer.append("text")
                 .attr("x", 5)
                 .attr("y", 10)
