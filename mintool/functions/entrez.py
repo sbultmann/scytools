@@ -53,18 +53,22 @@ def query_ncbi(gene_name, org_name):
                 isoform_locs = i['Gene-commentary_products'][0]['Gene-commentary_genomic-coords']\
                     [0]['Seq-loc_mix']['Seq-loc-mix']
                 for loc in isoform_locs:
+                    loc_strand = str(loc['Seq-loc_int']['Seq-interval']['Seq-interval_strand']).split(":")[2].split("}")[0][2:-1]
+                    if loc_strand == "plus":
+                        cor = 300
+                    else:
+                        cor = 0
                     loc_to = int(loc['Seq-loc_int']['Seq-interval']['Seq-interval_to'])
                     loc_from = int(loc['Seq-loc_int']['Seq-interval']['Seq-interval_from'])
                     real_exons.append(loc_to)
                     real_exons.append(loc_from)
-                    loc_to = abs(int((float(loc['Seq-loc_int']['Seq-interval']['Seq-interval_to'])-maxlenght)*ratio))
-                    loc_from = abs(int((float(loc['Seq-loc_int']['Seq-interval']['Seq-interval_from'])-maxlenght)*ratio))
+                    loc_to = abs(int((float(loc['Seq-loc_int']['Seq-interval']['Seq-interval_to'])-maxlenght)*ratio)+cor)
+                    loc_from = abs(int((float(loc['Seq-loc_int']['Seq-interval']['Seq-interval_from'])-maxlenght)*ratio)+cor)
 
-                    loc_strand = str(loc['Seq-loc_int']['Seq-interval']['Seq-interval_strand']).split(":")[2].split("}")[0][2:-1]
-                    if loc_to > loc_from:
-                        exon = [loc_to, loc_from]
-                    else:
-                        exon = [loc_from, loc_to]
+                    #if loc_to > loc_from:
+                    exon = [loc_to, loc_from]
+                    #else:
+                     #   exon = [loc_from, loc_to]
                     exons.append(exon)
                 seqDict = extract_sequences(locus_accession,min(real_exons), max(real_exons), locus_strand)
                 iso_info_list.append(json.dumps({"Name": isoform_name, "Accession_protein": isoform_accessionP,
@@ -92,9 +96,90 @@ def extract_sequences(nuc_id, iso_start, iso_stop, strand):
     return {"Nterm": Nterm, "Cterm" : Cterm}
 
 
+def generate_grna(sequence, terminus):
+    import re
+    from Bio.Seq import Seq
+    minTag = "ggtttgtctggtcaaccaccgcggtctcagtggtgtacggtacaaacc"
+    if terminus == "seqnterm":
+        modified_sequence = sequence[0:503] + minTag + sequence[503:]
+    if terminus == "seqcterm":
+        modified_sequence = sequence[0:500] + minTag + sequence[500:]
+
+    positions = {}
+    matches_fwd = re.finditer(r'[ACGTacgt]{21}GG', sequence)
+    matches_rev = re.finditer(r'CC[ACGTacgt]{21}', sequence)
+    n = 1
+    for match in matches_fwd:
+        if match.start() > 400 and match.end() < 603:
+            if match.group() not in modified_sequence:
+                rating = -1
+            else:
+                rating = abs(match.end() - 500)
+            positions["gRNA_" + str(n)] = {"start": match.start(), "end":match.end(), "sequence": match.group(),
+                                           "rating": rating, "strand": 1,
+                                           "toligo": str(Seq(modified_sequence[427:627]).reverse_complement())}
+            n += 1
+            print(rating)
+    for match in matches_rev:
+        if match.start() > 400 and match.end() < 603:
+            if match.group() not in modified_sequence:
+                rating = -1000
+            else:
+                rating = abs(match.start() - 500)
+            positions["gRNA_" + str(n)] = {"start": match.start(), "end": match.end(), "sequence": match.group(),
+                                           "rating": rating, "strand": 2,
+                                           "toligo": modified_sequence[427:627]}
+            n += 1
+
+
+    return positions
+
+
+def design_primers(sequence, included_region, size_range):
+    from primer3 import bindings
+    primers = bindings.designPrimers(
+        {
+            'SEQUENCE_ID': 'MH1000',
+            'SEQUENCE_TEMPLATE': sequence,
+            'SEQUENCE_INCLUDED_REGION': included_region
+        },
+        {
+            'PRIMER_OPT_SIZE': 20,
+            'PRIMER_PICK_INTERNAL_OLIGO': 1,
+            'PRIMER_INTERNAL_MAX_SELF_END': 8,
+            'PRIMER_MIN_SIZE': 18,
+            'PRIMER_MAX_SIZE': 25,
+            'PRIMER_OPT_TM': 60.0,
+            'PRIMER_MIN_TM': 57.0,
+            'PRIMER_MAX_TM': 63.0,
+            'PRIMER_MIN_GC': 20.0,
+            'PRIMER_MAX_GC': 80.0,
+            'PRIMER_MAX_POLY_X': 100,
+            'PRIMER_INTERNAL_MAX_POLY_X': 100,
+            'PRIMER_SALT_MONOVALENT': 50.0,
+            'PRIMER_DNA_CONC': 50.0,
+            'PRIMER_MAX_NS_ACCEPTED': 0,
+            'PRIMER_MAX_SELF_ANY': 12,
+            'PRIMER_MAX_SELF_END': 8,
+            'PRIMER_PAIR_MAX_COMPL_ANY': 12,
+            'PRIMER_PAIR_MAX_COMPL_END': 8,
+            'PRIMER_PRODUCT_SIZE_RANGE': size_range,
+            'PRIMER_NUM_RETURN': 1
+        })
+    """parts needed:PRIMER_RIGHT_0_SEQUENCE, PRIMER_RIGHT_0, PRIMER_RIGHT_0_TM
+                    PRIMER_LEFT_0_SEQUENCE, PRIMER_LEFT_0, PRIMER_LEFT_0_TM"""
+
+    return {"left_pos": list(primers["PRIMER_LEFT_0"]), "left_tm": primers["PRIMER_LEFT_0_TM"],
+            "left_seq": primers["PRIMER_LEFT_0_SEQUENCE"],
+            "right_pos": list(primers["PRIMER_RIGHT_0"]), "right_tm": primers["PRIMER_RIGHT_0_TM"],
+            "right_seq": primers["PRIMER_RIGHT_0_SEQUENCE"],
+            "product_size": list(primers["PRIMER_RIGHT_0"])[0] - primers["PRIMER_LEFT_0"][0]
+            }
 #print(query_ncbi("Dnmt3a", "Mouse"))
 
 #print(extract_sequences(372099101,20907520,20941453,2))
 #print(extract_sequences(372099098,3835197,3907746,1))
 
 #20908751 20908471 2 372099101
+#print(design_primers("CTGAGCTCACCAGGTCAGCCCAGAGTCCCACTCTTTGAGAGCCCCTCTCTTCTCAGAGGGGCATTTATGGATGAATCAGATTGAATTCAGACTCAAGCTGCCTGCACCATCCAGTTCTCATGTGCAGGGCGCCTGTAGAGCACATCCAAGAGGCATTTCAAAGGTCTGGGGGTTTTGCTTTGTTTTGTTTTTTTTTACTGCCTTTGTTTCTGGGGAGTGTGAATCTCAAAGCTGGGATTATACTACCTATCTTTATACCCACAGAGAGGCTGGCACATGGCAGCCTGTGACAGGAATTCAGAGTAAACTAACATCCGCCATCACACCCGCACTCACTCCCTTCCCTGCCTTCCTCCCACAGGGTGTTTGGCTTCCCCGTCCACTACACAGACGTCTCCAACATGAGCCGCTTGGCGAGGCAGAGACTGCTGGGCCGATCGTGGAGCGTGCCGGTCATCCGCCACCTCTTCGCTCCGCTGAAGGAATATTTTGCTTGTGTGTAAGGGACATGGGGGCAAACTGAAGTAGTGATGATAAAAAAGTTAAACAAACAAACAAACAAAAAACAAAACAAAACAATAAAACACCAAGAACGAGAGGACGGAGAAAAGTTCAGCACCCAGAAGAGAAAAAGGAATTTAAAGCAAACCACAGAGGAGGAAAACGCCGGAGGGCTTGGCCTTGCAAAAGGGTTGGACATCATCTCCTGAGTTTTCAATGTTAACCTTCAGTCCTATCTAAAAAGCAAAATAGGCCCCTCCCCTTCTTCCCCTCCGGTCCTAGGAGGCGAACTTTTTGTTTTCTACTCTTTTTCAGAGGGGTTTTCTGTTTGTTTGGGTTTTTGTTTCTTGCTGTGACTGAAACAAGAGAGTTATTGCAGCAAAATCAGTAACAACAAAAAGTAGAAATGCCTTGGAGAGGAAAGGGAGAGAGGGAAAATTCTATAAAAACTTAAAATATTGGTTTTTTTTTTTTTCCTTTTCTATATATCTCTTTGGTTGTC", [400,600], [[250,500]]))
+#print(generate_grna("CTGAGCTCACCAGGTCAGCCCAGAGTCCCACTCTTTGAGAGCCCCTCTCTTCTCAGAGGGGCATTTATGGATGAATCAGATTGAATTCAGACTCAAGCTGCCTGCACCATCCAGTTCTCATGTGCAGGGCGCCTGTAGAGCACATCCAAGAGGCATTTCAAAGGTCTGGGGGTTTTGCTTTGTTTTGTTTTTTTTTACTGCCTTTGTTTCTGGGGAGTGTGAATCTCAAAGCTGGGATTATACTACCTATCTTTATACCCACAGAGAGGCTGGCACATGGCAGCCTGTGACAGGAATTCAGAGTAAACTAACATCCGCCATCACACCCGCACTCACTCCCTTCCCTGCCTTCCTCCCACAGGGTGTTTGGCTTCCCCGTCCACTACACAGACGTCTCCAACATGAGCCGCTTGGCGAGGCAGAGACTGCTGGGCCGATCGTGGAGCGTGCCGGTCATCCGCCACCTCTTCGCTCCGCTGAAGGAATATTTTGCTTGTGTGTAAGGGACATGGGGGCAAACTGAAGTAGTGATGATAAAAAAGTTAAACAAACAAACAAACAAAAAACAAAACAAAACAATAAAACACCAAGAACGAGAGGACGGAGAAAAGTTCAGCACCCAGAAGAGAAAAAGGAATTTAAAGCAAACCACAGAGGAGGAAAACGCCGGAGGGCTTGGCCTTGCAAAAGGGTTGGACATCATCTCCTGAGTTTTCAATGTTAACCTTCAGTCCTATCTAAAAAGCAAAATAGGCCCCTCCCCTTCTTCCCCTCCGGTCCTAGGAGGCGAACTTTTTGTTTTCTACTCTTTTTCAGAGGGGTTTTCTGTTTGTTTGGGTTTTTGTTTCTTGCTGTGACTGAAACAAGAGAGTTATTGCAGCAAAATCAGTAACAACAAAAAGTAGAAATGCCTTGGAGAGGAAAGGGAGAGAGGGAAAATTCTATAAAAACTTAAAATATTGGTTTTTTTTTTTTTCCTTTTCTATATATCTCTTTGGTTGTC", "seqnterm"))

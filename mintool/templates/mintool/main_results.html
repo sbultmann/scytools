@@ -11,15 +11,48 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script>
+        function design_gRNA(sequence, term) {
+            console.log("ajax is working!") // sanity check
+            $.ajax({
+                url: "gRNA-design/", // the endpoint
+                type: "GET", // http method
+                data: {sequence: sequence, term: term}, // data sent with the post request
+
+                // handle a successful response
+                success: function (json) {
+                    //$('#post-text').val(''); // remove the value from the input
+                    $('#gRNA-display').text(json.sequence)
+                    console.log(json.sequence); // log the returned json to the console
+                    console.log("success"); // another sanity check
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+                    $('#gRNA-display').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: " + errmsg +
+                        " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                }
+            });
+        }
+        ;
         $(document).ready(function () {
             $(".terminus").click(function (e) {
                 e.preventDefault();
                 $('.terminus').removeAttr('style');
                 $('#' + $(this).data('rel')).css("background", "LightSlateGray");
+                if ($("#selected").length == 0) {
+                    alert("please select an isoform first");
+                }
+                else {
+                    var sequence = $('#selected').data($(this).data('rel'));
+                    design_gRNA(sequence, $(this).data('rel'));
+                }
             });
             $(".isoform_display").click(function (e) {
                 e.preventDefault();
-                $(this).css("background", "LightSlateGray").siblings("div").removeAttr('style');
+                $(this).css("background", "LightSlateGray").siblings("div").removeAttr('style').attr("id", "unselected");
+                $(this).attr("id", "selected");
+
             });
 
         });
@@ -47,6 +80,17 @@
     </div>
     <div class="grid_4">
         <div class="grid_4 alpha" id="sub_header">II. Select Isoform</div>
+        <div class="grid_4">
+            <p id="gene_name">Why do I have to pick an isoform?</p>
+            <p>Good question! There are several reasons why we require this step. First, the graphic below gives an
+                overview of all the isoforms annotated for your gene. To be precise, it only shows the coding parts
+                of the mRNAs. This can help you to decide which terminus to target (there are some additional
+                considerations - see step II.). In most cases you want to MIN-tag all isoforms in one targeting.
+                If that's the case, pick any of the isoforms and choose the corresponding terminus in step II.
+                If you want to target a specific isoform or subgroup of isoforms you can choose it here and the MINtool
+                will extract the corresponing sequence for you after you completed step II. Enjoy!
+            </p>
+        </div>
         <div class="grid_4 omega" id="isoform-overview"></div>
 
     </div>
@@ -62,16 +106,18 @@
             </p>
         </div>
         <div class="grid_4">
-            <div class="terminus" id="N-term" data-rel="N-term">N-terminus</div>
+            <div class="terminus" id="seqnterm" data-rel="seqnterm">N-terminus</div>
         </div>
         <div class="grid_4" id="spacer12"></div>
         <div class="grid_4">
-            <div class="terminus" id="C-term" data-rel="C-term">C-terminus</div>
+            <div class="terminus" id="seqcterm" data-rel="seqcterm">C-terminus</div>
         </div>
         <div class="grid_4 omega"></div>
     </div>
     <div class="clear"></div>
-    <div class="grid_12" id="sub_header">IV. Choos a gRNA</div>
+    <div class="grid_12" id="sub_header">IV. Choose a gRNA</div>
+    <div class="clear"></div>
+    <div class="grid_12" id="gRNA-display">Please complete step I and II to display gRNAs</div>
     <div class="clear"></div>
 </div>
 
@@ -119,7 +165,9 @@
             var isoform = JSON.parse(isoform_data[i]);
             var divIsoforms = ContainerDiv.append("div")
                 .attr("class", "isoform_display")
-                .attr("id", isoform.Accession_nucleotide);
+                .attr("id", isoform.Accession_nucleotide)
+                .attr("data-seqNterm", isoform.Nterm)
+                .attr("data-seqCterm", isoform.Cterm);
             var svgContainer = divIsoforms.append("svg")
                 .attr("width", 300)
                 .attr("height", 50)
@@ -144,7 +192,7 @@
                     if (d[0] - d[1] == 0) {
                         returnVal = 1;
                     } else {
-                        returnVal = d[0] - d[1];
+                        returnVal = Math.abs(d[0] - d[1]);
                     }
                     return returnVal;
                 })

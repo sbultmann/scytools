@@ -63,7 +63,11 @@ p {
     width: 100%;
     height: 12px;
 }
-
+#gRNA-display{
+    word-wrap:break-word;
+    display:inline-block;
+    border: 1px solid black;
+}
 .isoform_display :hover,
 .isoform_display :focus,
 .isoform_display :active {

@@ -1,0 +1,5 @@
+biopython==1.68
+Cython==0.25.2
+Django==1.10.4
+primer3-py==0.5.1
+wheel==0.24.0
