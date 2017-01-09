@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     {% load static %}
-
     <link rel="stylesheet" type="text/css" href="{% static 'mintool/reset.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'mintool/text.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'mintool/960.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'mintool/mintool.css' %}"/>
-    <meta charset="UTF-8">
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="{% static 'mintool/mintool_functions.js' %}"></script>
     <script>
-        function design_gRNA(sequence, term) {
-            console.log("ajax is working!") // sanity check
-            $.ajax({
-                url: "gRNA-design/", // the endpoint
-                type: "GET", // http method
-                data: {sequence: sequence, term: term}, // data sent with the post request
-
-                // handle a successful response
-                success: function (json) {
-                    //$('#post-text').val(''); // remove the value from the input
-                    $('#gRNA-display').text(json.sequence)
-                    console.log(json.sequence); // log the returned json to the console
-                    console.log("success"); // another sanity check
-                },
-
-                // handle a non-successful response
-                error: function (xhr, errmsg, err) {
-                    $('#gRNA-display').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: " + errmsg +
-                        " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
-                    console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
-                }
-            });
-        }
-        ;
         $(document).ready(function () {
+            $("#gRNA-overview").on("click", ".gRNA", function () {
+                $(this).attr("id", "selected").siblings("div").removeAttr('style').attr("id", "unselected");
+                var to = $(this).attr("to");
+                var from = $(this).attr("from");
+                var strand = $(this).attr("strand");
+                select_gRNA([bp_to_xy(from),bp_to_xy(to)], strand);
+            });
+            $("#gRNA-overview").on("mouseenter", ".gRNA", function (e) {
+                e.preventDefault();
+                $(this).css("background", "gainsboro");
+                var to = $(this).attr("to");
+                var from = $(this).attr("from");
+                var strand = $(this).attr("strand");
+                highlight_gRNA([bp_to_xy(from),bp_to_xy(to)], strand);
+                console.log("gRNA_pos", [bp_to_xy(from),bp_to_xy(to)])
+            }).on("mouseleave", ".gRNA", function (e) {
+                e.preventDefault();
+                $(this).removeAttr('style');
+                highlight_gRNA([0,0],1);
+            });
             $(".terminus").click(function (e) {
                 e.preventDefault();
                 $('.terminus').removeAttr('style');
@@ -48,11 +44,16 @@
                     design_gRNA(sequence, $(this).data('rel'));
                 }
             });
+            $(".container").on("mouseenter", ".isoform_display", function (e) {
+                e.preventDefault();
+                $(this).css("background", "gainsboro");
+            }).on("mouseleave", ".isoform_display", function (e) {
+                e.preventDefault();
+                $(this).removeAttr('style');
+            });
             $(".isoform_display").click(function (e) {
                 e.preventDefault();
-                $(this).css("background", "LightSlateGray").siblings("div").removeAttr('style').attr("id", "unselected");
-                $(this).attr("id", "selected");
-
+                $(this).attr("id", "selected").siblings("div").removeAttr('style').attr("id", "unselected");
             });
 
         });
@@ -115,9 +116,10 @@
         <div class="grid_4 omega"></div>
     </div>
     <div class="clear"></div>
-    <div class="grid_12" id="sub_header">IV. Choose a gRNA</div>
+    <div class="grid_12" id="sub_header">IV. Choose a guide</div>
     <div class="clear"></div>
-    <div class="grid_12" id="gRNA-display">Please complete step I and II to display gRNAs</div>
+    <div class="grid_3" id="gRNA-overview"></div>
+    <div class="grid_9" id="gRNA-display"><svg id="canvas" width="710" height="700"></svg></div>
     <div class="clear"></div>
 </div>
 

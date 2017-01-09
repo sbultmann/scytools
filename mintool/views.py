@@ -34,13 +34,15 @@ def requestNCBI(request, gene_org):
 
 def gRNAdesign(request):
     if request.method == 'GET':
+        from Bio.Seq import Seq
         sequence = request.GET['sequence']
         term = request.GET['term']
 
         response_data = dict()
         response_data["gRNAs"] = generate_grna(sequence, term)
-        response_data["primers"] = design_primers(sequence, [400, 600], [[250, 500]])
+        response_data["primers"] = design_primers(sequence, [200, 500], [[250, 450]])
         response_data["sequence"] = sequence
+        response_data["rev_sequence"] = str(Seq(sequence).complement())
         response_data["term"] = term
 
         return HttpResponse(
