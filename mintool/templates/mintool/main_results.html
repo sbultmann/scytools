@@ -86,11 +86,11 @@
         {% for Gene in result %}
             <div class="grid_4 {% if forloop.last %} omega"{% endif %} id="result" acc={{ Gene.Accession }}>
                 <p id="gene_name">{{ Gene.Gene_Name }} </p>
-                <p>{{ Gene.Description }}</p>
+                <p>{{ Gene.Description | safe }}</p>
             </div>
         {% endfor %}
     </div>
-    <div class="grid_4">
+    <div class="grid_4" id="section_2">
         <div class="grid_4 alpha" id="sub_header_2">II. Select Isoform</div>
         <div class="grid_4">
             <p id="gene_name">Why do I have to pick an isoform?</p>

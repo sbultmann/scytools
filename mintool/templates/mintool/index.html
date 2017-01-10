@@ -2,13 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/reset.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/text.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/960.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'mintool/mintool.css' %}"/>
+    <title>MINtool</title>
 </head>
 <body>
-<form action="/mintool/" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
-</form>
+<div class="container_12">
+    <div class="grid_12" id="header">MINtool</div>
+    <div class="clear"></div>
+
+    <div class="grid_12" id="nav-bar"></div>
+    <div class="clear"></div>
+    <div class="grid_12" id="seperator"></div>
+    <div class="clear"></div>
+    <div class="grid_4" style="width: 300px;height: 10px;"> </div>
+    <div class="grid_4">
+        <form action="/mintool/" method="post" class="form-container">
+            <div class="form-title"><h2>Target Gene Search</h2></div>
+            {% csrf_token %}
+            <div class="form-title">Gene Name{{ form.gene_name}}</div>
+            <div class="form-title">Species<br>{{ form.organism}}</div>
+
+            <div class="submit-container">
+            <input type="submit" value="Submit" class="submit-button"/>
+                </div>
+        </form>
+    </div>
+    <div class="grid_4"></div>
+    <div class="clear"></div>
+</div>
+
 </body>
 </html>
