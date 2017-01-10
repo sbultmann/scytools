@@ -175,6 +175,15 @@ def design_primers(sequence, included_region, size_range):
             "right_seq": primers["PRIMER_RIGHT_0_SEQUENCE"],
             "product_size": list(primers["PRIMER_RIGHT_0"])[0] - primers["PRIMER_LEFT_0"][0]
             }
+
+
+def gRNA_oligos(seq):
+    from Bio.Seq import Seq
+    seq = Seq(seq)
+    f_oligo = "caccg"+str(seq)[:-3]
+    r_oligo = "aaac"+str(seq.reverse_complement())[3:]+"c"
+    return (f_oligo, r_oligo)
+
 #print(query_ncbi("Dnmt3a", "Mouse"))
 
 #print(extract_sequences(372099101,20907520,20941453,2))

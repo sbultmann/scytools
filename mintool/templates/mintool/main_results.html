@@ -12,12 +12,18 @@
     <script src="{% static 'mintool/mintool_functions.js' %}"></script>
     <script>
         $(document).ready(function () {
+            $("#section_3").hide(0);
+            $("#section_4").hide(0);
+            $("#download_button").hide(0);
             $("#gRNA-overview").on("click", ".gRNA", function () {
                 $(this).attr("id", "selected").siblings("div").removeAttr('style').attr("id", "unselected");
                 var to = $(this).attr("to");
                 var from = $(this).attr("from");
                 var strand = $(this).attr("strand");
-                select_gRNA([bp_to_xy(from),bp_to_xy(to)], strand);
+                select_gRNA([bp_to_xy(from), bp_to_xy(to)], strand);
+                $("#toligo").val($(this).attr("toligo"));
+                $("#gRNA-seq").val($(this).attr("sequence"));
+                $("#download_button").show(100);
             });
             $("#gRNA-overview").on("mouseenter", ".gRNA", function (e) {
                 e.preventDefault();
@@ -25,14 +31,16 @@
                 var to = $(this).attr("to");
                 var from = $(this).attr("from");
                 var strand = $(this).attr("strand");
-                highlight_gRNA([bp_to_xy(from),bp_to_xy(to)], strand);
-                console.log("gRNA_pos", [bp_to_xy(from),bp_to_xy(to)])
+                highlight_gRNA([bp_to_xy(from), bp_to_xy(to)], strand);
+                console.log("gRNA_pos", [bp_to_xy(from), bp_to_xy(to)])
             }).on("mouseleave", ".gRNA", function (e) {
                 e.preventDefault();
                 $(this).removeAttr('style');
-                highlight_gRNA([0,0],1);
+                highlight_gRNA([0, 0], 1);
             });
             $(".terminus").click(function (e) {
+                $("#download_button").hide(0);
+                $("#section_4").show(100);
                 e.preventDefault();
                 $('.terminus').removeAttr('style');
                 $('#' + $(this).data('rel')).css("background", "LightSlateGray");
@@ -54,6 +62,9 @@
             $(".isoform_display").click(function (e) {
                 e.preventDefault();
                 $(this).attr("id", "selected").siblings("div").removeAttr('style').attr("id", "unselected");
+                $(".terminus").removeAttr('style');
+                $("#download_button").hide(0);
+                $("#section_3").show(100);
             });
 
         });
@@ -71,7 +82,7 @@
     <div class="grid_12" id="seperator"></div>
     <div class="clear"></div>
     <div class="grid_4">
-        <div class="grid_4 alpha" id="sub_header">I. Gene Info</div>
+        <div class="grid_4 alpha" id="sub_header_1">I. Gene Info</div>
         {% for Gene in result %}
             <div class="grid_4 {% if forloop.last %} omega"{% endif %} id="result" acc={{ Gene.Accession }}>
                 <p id="gene_name">{{ Gene.Gene_Name }} </p>
@@ -80,7 +91,7 @@
         {% endfor %}
     </div>
     <div class="grid_4">
-        <div class="grid_4 alpha" id="sub_header">II. Select Isoform</div>
+        <div class="grid_4 alpha" id="sub_header_2">II. Select Isoform</div>
         <div class="grid_4">
             <p id="gene_name">Why do I have to pick an isoform?</p>
             <p>Good question! There are several reasons why we require this step. First, the graphic below gives an
@@ -95,8 +106,8 @@
         <div class="grid_4 omega" id="isoform-overview"></div>
 
     </div>
-    <div class="grid_4">
-        <div class="grid_4 alpha" id="sub_header">III. Select Terminus</div>
+    <div class="grid_4" id="section_3">
+        <div class="grid_4 alpha" id="sub_header_3">III. Select Terminus</div>
         <div class="grid_4">
             <p id="gene_name">N- or C-terminal MIN-tagging?</p>
             <p>Please choose the terminus that you would like to MIN-tag. It is important to note that many
@@ -116,10 +127,23 @@
         <div class="grid_4 omega"></div>
     </div>
     <div class="clear"></div>
-    <div class="grid_12" id="sub_header">IV. Choose a guide</div>
+    <div class="grid_12" id="section_4">IV. Choose a guide</div>
     <div class="clear"></div>
     <div class="grid_3" id="gRNA-overview"></div>
-    <div class="grid_9" id="gRNA-display"><svg id="canvas" width="710" height="700"></svg></div>
+    <div class="grid_9" id="gRNA-display">
+        <svg id="canvas" width="710" height="500"></svg>
+    </div>
+    <div class="clear"></div>
+    <div class="grid_12" id="generate_csv_form">
+        <form action="create_csv" method="get" class>
+            <input type="submit" value="Download targeting strategy" id="download_button" class="download_button">
+            <input type="hidden" name="toligo" id="toligo" class = form-field><br>
+            <input type="hidden" name="gRNA-seq" id ="gRNA-seq" class = form-field><br>
+            <input type="hidden" name="primer_f" id = "primer_f" class = form-field><br>
+            <input type="hidden" name="primer_r" id = "primer_r" class = form-field><br>
+            <input type="hidden" name="locus_sequence" id = "locus_sequence" class = form-field><br>
+        </form>
+    </div>
     <div class="clear"></div>
 </div>
 

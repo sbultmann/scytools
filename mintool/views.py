@@ -54,3 +54,29 @@ def gRNAdesign(request):
             json.dumps({"nothing to see": "this isn't happening"}),
             content_type="application/json"
         )
+
+
+def create_csv(request):
+    if request.method == 'GET':
+        toligo = request.GET['toligo']
+        gRNA_seq = request.GET['gRNA-seq']
+        primer_f = request.GET['primer_f']
+        primer_r = request.GET['primer_r']
+        f_oligo, r_oligo = gRNA_oligos(gRNA_seq)
+        locus_sequence = request.GET['locus_sequence']
+        csv = "targeting_oligo,"+toligo+"\n"
+        csv = csv + "screening_primer_f," + primer_f + "\n"
+        csv = csv + "screening_primer_r," + primer_r + "\n"
+        csv = csv + "gRNA_upper," + f_oligo + "\n"
+        csv = csv + "gRNA_lower," + r_oligo + "\n"
+        csv = csv + "full_locus_sequence," + locus_sequence + "\n"
+        response = HttpResponse(csv, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="targeing_oligos.csv"'
+        return response
+    else:
+        csv = "Nothing to see - something went wrong"
+        response = HttpResponse(csv, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="targeing_oligos.csv"'
+        return response
+    #toligo, gRNA-seq, primer_f, primer_r
+

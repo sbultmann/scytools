@@ -17,7 +17,8 @@ function insert_gRNAs(json) {
             to: gRNA.end,
             rel: gRNA.rating,
             strand: gRNA.strand,
-            sequence: gRNA.toligo,
+            sequence: gRNA.sequence,
+            toligo: gRNA.toligo,
             html: '',
         }).appendTo('#gRNA-overview');
         jQuery('<div/>', {
@@ -53,14 +54,18 @@ function design_gRNA(sequence, term) {
             var data = [];
             for (i = 152, y = 75; i < 852; i = i + 100) {
                 data.push([json.sequence.substr(i, 100), y, json.rev_sequence.substr(i, 100), y + 12])
-                y = y + 75
+                y = y + 50
             }
             var cords = [bp_to_xy(500)];
             highlight_atg(cords);
+            select_gRNA([0,0],1)
             draw_sequence(data);
             draw_ticks();
+            $("#primer_f").val(json.primers.left_seq);
+            $("#primer_r").val(json.primers.right_seq);
+            $("#locus_sequence").val(sequence);
             var primerfwd_pos = [bp_to_xy(json.primers.left_pos[0]), bp_to_xy(json.primers.left_pos[0] + json.primers.left_pos[1])];
-            var primerrev_pos = [bp_to_xy(json.primers.right_pos[0]), bp_to_xy(json.primers.right_pos[0] + json.primers.right_pos[1])];
+            var primerrev_pos = [bp_to_xy(json.primers.right_pos[0] - json.primers.right_pos[1]),bp_to_xy(json.primers.right_pos[0])];
             console.log(primerfwd_pos);
             console.log(primerrev_pos);
             draw_primers(primerfwd_pos, primerrev_pos);
@@ -78,18 +83,30 @@ function design_gRNA(sequence, term) {
     });
 };
 
+function validateForm() {
+  $('.form-field').each(function() {
+    if ( $(this).val() === '' ) {
+      return false
+    }
+    else {
+      return true;
+    }
+  });
+}
+
+
 function bp_to_xy(N) {
     N = N - 152;
     var x_bp = N % 100;
     var y_bp = Math.floor(N / 100);
-    var y = (y_bp * 75) + 66;
+    var y = (y_bp * 50) + 66;
     var x = x_bp * 7;
     return [x, y]
 }
 
 function highlight_atg(cords) {
     var container = d3.select("#canvas")
-        .attr("height", 700)
+        .attr("height", 500)
         .attr("width", 710);
     var highlight = container.selectAll("#start_stop_codon")
         .data(cords)
@@ -421,7 +438,7 @@ function draw_primers(fwd_cords, rev_cords) {
 
 function draw_ticks() {
     var ticks_data = []
-    for (y = 61, n = 0; y < (7 * 75) + 61; y = y + 75) {
+    for (y = 61, n = 0; y < (7 * 50) + 61; y = y + 50) {
         for (i = 133, x = 20; i < 701; i = i + 140) {
             ticks_data.push([i, y, n + x+150]);
             x = x + 20;
@@ -471,7 +488,7 @@ function draw_ticks() {
 
 function draw_sequence(data) {
     var container = d3.select("#canvas")
-        .attr("height", 700)
+        .attr("height", 500)
         .attr("width", 710);
     var fwd = container.selectAll("#fwd")
         .data(data)
