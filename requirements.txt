@@ -5,4 +5,4 @@ Django==1.10.4
 gunicorn==19.6.0
 numpy==1.11.3
 whitenoise==3.2.3
-psycopg2==2.4.4
+psycopg2==2.6.2
