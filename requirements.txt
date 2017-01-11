@@ -1,3 +1,6 @@
+requests==2.10.0
+pycryptodome==3.4.3
+keen==0.3.28
 biopython==1.68
 Cython==0.25.2
 dj-database-url==0.4.2

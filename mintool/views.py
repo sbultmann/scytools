@@ -13,9 +13,14 @@ def index(request):
         form = RequestForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
+            import keen
             gene_name = form.cleaned_data['gene_name']
             organism = form.cleaned_data['organism']
             gene_org = gene_name + organism
+            keen.add_event("searches", {
+                "gene": gene_name,
+                "organism": organism
+            })
             request = test.objects.create(
                 gene_name=gene_name,
                 org_name=organism,
