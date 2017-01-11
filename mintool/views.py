@@ -65,6 +65,12 @@ def gRNAdesign(request):
 
 def create_csv(request):
     if request.method == 'GET':
+        import keen
+        keen.project_id = "587654b08db53dfda8a82f5e"
+        keen.write_key = "A928CF522444F1616A8C20F202151C3BD5B527C9F8B2E03D1A2A0C1BF32D4F39628F46B8EA017D23AF4CEAD9F0AAD2B21ED1251E34CD255FCDC54833757FDC49890B137B28CCF27A018789A08485FF7A257AF78A7289A921268A36093F4E1522"
+        keen.add_event("downloads", {
+            "info": "none"
+        })
         toligo = request.GET['toligo']
         gRNA_seq = request.GET['gRNA-seq']
         primer_f = request.GET['primer_f']
