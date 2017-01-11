@@ -86,7 +86,7 @@ DATABASES = {
 }
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
+#DEBUG = config('DEBUG', default=False, cast=bool)
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
