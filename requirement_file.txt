@@ -1,3 +1,0 @@
-biopython==1.68
-Django==1.10.4
-wheel==0.24.0
