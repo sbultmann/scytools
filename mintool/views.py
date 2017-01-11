@@ -81,7 +81,7 @@ def create_csv(request):
     else:
         csv = "Nothing to see - something went wrong"
         response = HttpResponse(csv, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="targeing_oligos.csv"'
+        response['Content-Disposition'] = 'attachment; filename="targeting_oligos.csv"'
         return response
     #toligo, gRNA-seq, primer_f, primer_r
 
