@@ -14,6 +14,8 @@ def index(request):
         # check whether it's valid:
         if form.is_valid():
             import keen
+            keen.project_id = "587654b08db53dfda8a82f5e"
+            keen.write_key = "A928CF522444F1616A8C20F202151C3BD5B527C9F8B2E03D1A2A0C1BF32D4F39628F46B8EA017D23AF4CEAD9F0AAD2B21ED1251E34CD255FCDC54833757FDC49890B137B28CCF27A018789A08485FF7A257AF78A7289A921268A36093F4E1522"
             gene_name = form.cleaned_data['gene_name']
             organism = form.cleaned_data['organism']
             gene_org = gene_name + organism
