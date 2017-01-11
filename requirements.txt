@@ -1,3 +1,4 @@
+Cython==0.25.2
 biopython==1.68
 dj-database-url==0.4.2
 Django==1.10.4
@@ -5,4 +6,3 @@ gunicorn==19.6.0
 numpy==1.11.3
 primer3-py==0.5.1
 whitenoise==3.2.3
-Cython==0.25.2
