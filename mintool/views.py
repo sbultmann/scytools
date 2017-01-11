@@ -78,7 +78,7 @@ def create_csv(request):
         csv = csv + "gRNA_lower," + r_oligo + "\n"
         csv = csv + "full_locus_sequence," + locus_sequence + "\n"
         response = HttpResponse(csv, content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="targeing_oligos.csv"'
+        response['Content-Disposition'] = 'attachment; filename="targeting_oligos.csv"'
         return response
     else:
         csv = "Nothing to see - something went wrong"
