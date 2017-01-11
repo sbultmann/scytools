@@ -224,8 +224,12 @@ def design_primers(sequence, included_region, size_range):
 def gRNA_oligos(seq):
     from Bio.Seq import Seq
     seq = Seq(seq)
-    f_oligo = "caccg"+str(seq)[:-3]
-    r_oligo = "aaac"+str(seq.reverse_complement())[3:]+"c"
+    if seq.upper()[0] != "G":
+        f_oligo = "caccg"+str(seq)[:-3]
+        r_oligo = "aaac"+str(seq.reverse_complement())[3:]+"c"
+    else:
+        f_oligo = "cacc" + str(seq)[:-3]
+        r_oligo = "aaac" + str(seq.reverse_complement())[3:]
     return (f_oligo, r_oligo)
 
 #print(query_ncbi("Uhrf2", "Mouse"))
