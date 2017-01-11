@@ -75,6 +75,7 @@ WSGI_APPLICATION = 'scytools.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+import dj_database_url
 
 
 DATABASES = {
@@ -84,20 +85,16 @@ DATABASES = {
     }
 }
 
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'daujuniot183c',
-        'USER': 'lzyvpdvdemnlkn',
-        'PASSWORD': 'a2ae911896c915e2448209625f05504b551e58bcf6329e2e54790d348a462cee',
-        'HOST': 'ec2-54-163-234-4.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
 
-import dj_database_url
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+#db_from_env = dj_database_url.config(conn_max_age=500)
+#DATABASES['default'].update(db_from_env)
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
