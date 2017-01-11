@@ -83,6 +83,18 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.mintools'),
     }
 }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'daujuniot183c',
+        'USER': 'lzyvpdvdemnlkn',
+        'PASSWORD': 'a2ae911896c915e2448209625f05504b551e58bcf6329e2e54790d348a462cee',
+        'HOST': 'ec2-54-163-234-4.compute-1.amazonaws.com',
+        'PORT': '5432',
+    }
+}
+
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
