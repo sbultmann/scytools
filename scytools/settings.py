@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'scytools.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 import dj_database_url
-
+from decouple import Csv, config
 
 DATABASES = {
     'default': {
@@ -86,7 +86,7 @@ DATABASES = {
 }
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-#DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
