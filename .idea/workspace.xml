@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e8a5742c-75da-446b-a8f8-8993ef189bbb" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mintool/templates/mintool/index.html" afterPath="$PROJECT_DIR$/mintool/templates/mintool/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mintool/urls.py" afterPath="$PROJECT_DIR$/mintool/urls.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -38,11 +39,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mintool/templates/mintool/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="22" column="22" lean-forward="false" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+            <state relative-caret-position="390">
+              <caret line="32" column="10" lean-forward="true" selection-start-line="32" selection-start-column="10" selection-end-line="32" selection-end-column="10" />
               <folding />
             </state>
           </provider>
@@ -92,11 +93,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mintool/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="9" column="1" lean-forward="true" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
+            <state relative-caret-position="45">
+              <caret line="5" column="19" lean-forward="false" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -194,7 +195,6 @@
         <option value="$PROJECT_DIR$/mintool/models.py" />
         <option value="$PROJECT_DIR$/templates/mintool/main_result.htl.html" />
         <option value="$PROJECT_DIR$/templates/mintool/main_results.html" />
-        <option value="$PROJECT_DIR$/mintool/urls.py" />
         <option value="$PROJECT_DIR$/mintool/static/mintool/mintool_functions.js" />
         <option value="$PROJECT_DIR$/mintool/templates/mintool/main_results.html" />
         <option value="$PROJECT_DIR$/mintool/forms.py" />
@@ -205,6 +205,7 @@
         <option value="$PROJECT_DIR$/scytools/settings.py" />
         <option value="$PROJECT_DIR$/scytools/urls.py" />
         <option value="$PROJECT_DIR$/mintool/templates/mintool/index.html" />
+        <option value="$PROJECT_DIR$/mintool/urls.py" />
       </list>
     </option>
   </component>
@@ -215,8 +216,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="411" />
-    <option name="y" value="103" />
+    <option name="x" value="507" />
+    <option name="y" value="260" />
     <option name="width" value="1467" />
     <option name="height" value="889" />
   </component>
@@ -794,7 +795,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="411" y="103" width="1467" height="889" extended-state="0" />
+    <frame x="507" y="260" width="1467" height="889" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2168421" sideWeight="0.8104449" order="0" side_tool="false" content_ui="tabs" />
@@ -1035,14 +1036,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mintool/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="9" column="1" lean-forward="true" selection-start-line="9" selection-start-column="1" selection-end-line="9" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mintool/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
@@ -1063,8 +1056,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mintool/templates/mintool/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="22" column="22" lean-forward="false" selection-start-line="22" selection-start-column="22" selection-end-line="22" selection-end-column="22" />
+        <state relative-caret-position="390">
+          <caret line="32" column="10" lean-forward="true" selection-start-line="32" selection-start-column="10" selection-end-line="32" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mintool/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="5" column="19" lean-forward="false" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
           <folding />
         </state>
       </provider>
