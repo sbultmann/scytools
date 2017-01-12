@@ -26,7 +26,7 @@ SECRET_KEY = 'g1e23%@4_pn6hd3%)tc9zteyj#pmf$cy7jo0pv1cn_zx*_^m-u'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['protected-crag-10300.herokuapp.com']
+ALLOWED_HOSTS = ['protected-crag-10300.herokuapp.com', 'www.min-tool.com']
 
 
 # Application definition
