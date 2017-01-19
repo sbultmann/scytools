@@ -18,5 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^mintool/', include('mintool.urls')),
+    url(r'^plantmc/', include('plantmc.urls')),
     url(r'^admin/', admin.site.urls),
 ]

@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['protected-crag-10300.herokuapp.com', 'www.min-tool.com']
 
 INSTALLED_APPS = [
     'mintool',
+    'plantmc',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +57,7 @@ ROOT_URLCONF = 'scytools.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'mintool/templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'mintool/templates'), os.path.join(BASE_DIR, 'plantmc/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
